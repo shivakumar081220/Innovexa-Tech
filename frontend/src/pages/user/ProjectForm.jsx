@@ -4,14 +4,13 @@ import toast from 'react-hot-toast'
 import { useParams, useNavigate } from 'react-router-dom'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
-import { userRequestsService, uploadFile } from '../../services/api'
-import { Upload, X } from 'lucide-react'
+import { userRequestsService } from '../../services/api'
+import { proposalService } from '../../services/supabaseService'
 
 const ProjectForm = () => {
   const { domain } = useParams()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const [uploadedFiles, setUploadedFiles] = useState([])
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -27,7 +26,6 @@ const ProjectForm = () => {
     detailedRequirements: '',
     needProjectReport: 'No',
     preferredCommunication: 'Email',
-    referenceFiles: [],
   })
 
   const projectDomains = [
@@ -50,39 +48,30 @@ const ProjectForm = () => {
     }))
   }
 
-  const handleFileUpload = async (e) => {
-    const files = Array.from(e.target.files)
-    setLoading(true)
-
-    try {
-      for (const file of files) {
-        const response = await uploadFile(file)
-        setUploadedFiles((prev) => [...prev, response.data.filename])
-      }
-      toast.success(`${files.length} file(s) uploaded successfully`)
-    } catch (error) {
-      toast.error('Error uploading file')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleRemoveFile = (filename) => {
-    setUploadedFiles((prev) => prev.filter((f) => f !== filename))
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
 
     try {
-      const dataToSubmit = {
-        ...formData,
-        referenceFiles: uploadedFiles,
+      // Insert into Supabase proposal table
+      const payload = {
+        name: formData.fullName,
+        email: formData.email,
+        phnenumber: formData.phoneNumber,
+        college: formData.collegeName,
+        title: formData.projectTitle,
+        domain: formData.projectDomain,
+        type: formData.projectType,
+        technologies: formData.technologiesRequired,
+        deadline: formData.deadline,
+        budget: formData.budget,
+        report: formData.needProjectReport,
+        communication: formData.preferredCommunication,
+        requirements: formData.detailedRequirements,
       }
 
-      await userRequestsService.submitRequest(dataToSubmit)
-      toast.success('Project request submitted successfully!')
+      await proposalService.insertProposal(payload)
+      toast.success('Project request submitted successfully! (saved to Supabase)')
       
       // Reset form
       setFormData({
@@ -99,9 +88,7 @@ const ProjectForm = () => {
         detailedRequirements: '',
         needProjectReport: 'No',
         preferredCommunication: 'Email',
-        referenceFiles: [],
       })
-      setUploadedFiles([])
 
       setTimeout(() => {
         navigate('/')
@@ -355,52 +342,6 @@ const ProjectForm = () => {
                   rows="6"
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
                 />
-              </div>
-
-              {/* File Upload */}
-              <div>
-                <label className="block text-sm font-semibold mb-2">
-                  Reference Files (Optional)
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
-                  <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                  <label className="cursor-pointer">
-                    <span className="text-blue-600 font-semibold">Click to upload</span>
-                    <span className="text-gray-600"> or drag files here</span>
-                    <input
-                      type="file"
-                      multiple
-                      onChange={handleFileUpload}
-                      disabled={loading}
-                      className="hidden"
-                    />
-                  </label>
-                  <p className="text-sm text-gray-500 mt-1">
-                    PDF, Images, or Documents (Max 10MB each)
-                  </p>
-                </div>
-
-                {/* Uploaded Files List */}
-                {uploadedFiles.length > 0 && (
-                  <div className="mt-4 space-y-2">
-                    <p className="font-semibold text-sm">Uploaded Files:</p>
-                    {uploadedFiles.map((file) => (
-                      <div
-                        key={file}
-                        className="flex items-center justify-between bg-blue-50 p-3 rounded-lg"
-                      >
-                        <span className="text-sm text-gray-700">{file}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveFile(file)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <X size={18} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
 
               {/* Submit Button */}

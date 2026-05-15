@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { userRequestsService } from '../../services/api'
+import { proposalService } from '../../services/supabaseService'
 import { Trash2, Eye } from 'lucide-react'
 
 const ProjectRequests = () => {
@@ -16,8 +17,26 @@ const ProjectRequests = () => {
 
   const fetchRequests = async () => {
     try {
-      const response = await userRequestsService.getRequests()
-      setRequests(response.data)
+      const rows = await proposalService.getProposals()
+      const mapped = rows.map((r) => ({
+        _id: r.id || r.created_at,
+        fullName: r.name,
+        email: r.email,
+        phoneNumber: r.phnenumber,
+        collegeName: r.college,
+        projectTitle: r.title,
+        projectDomain: r.domain,
+        projectType: r.type,
+        technologiesRequired: r.technologies,
+        deadline: r.deadline,
+        budget: r.budget,
+        needProjectReport: r.report,
+        preferredCommunication: r.communication,
+        detailedRequirements: r.requirements,
+        status: r.status || 'Pending',
+      }))
+
+      setRequests(mapped)
     } catch (error) {
       toast.error('Error loading requests')
     } finally {
@@ -26,17 +45,19 @@ const ProjectRequests = () => {
   }
 
   const handleStatusChange = async (id, newStatus) => {
-    // This would typically call an update API
-    setRequests((prev) =>
-      prev.map((req) => (req._id === id ? { ...req, status: newStatus } : req))
-    )
-    toast.success('Status updated')
+    try {
+      await proposalService.updateProposal(id, { status: newStatus })
+      setRequests((prev) => prev.map((req) => (req._id === id ? { ...req, status: newStatus } : req)))
+      toast.success('Status updated')
+    } catch (error) {
+      toast.error('Error updating status')
+    }
   }
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this request?')) {
       try {
-        await userRequestsService.deleteRequest(id)
+        await proposalService.deleteProposal(id)
         setRequests((prev) => prev.filter((req) => req._id !== id))
         toast.success('Request deleted')
       } catch (error) {

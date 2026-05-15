@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
 import { projectsService, API_ASSET_BASE_URL } from '../../services/api'
+import { supaProjectsService } from '../../services/supabaseService'
 import { Github, ExternalLink } from 'lucide-react'
 
 const Portfolio = () => {
@@ -17,8 +18,24 @@ const Portfolio = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await projectsService.getAllProjects()
-      setProjects(response.data)
+      const rows = await supaProjectsService.getProjects()
+      // Normalize projects so UI expects an array for technologies and _id key
+      const normalized = (rows || []).map((r) => ({
+        _id: r.id ?? r._id ?? r.created_at,
+        id: r.id ?? r._id,
+        title: r.title,
+        domain: r.domain,
+        description: r.description,
+        image: r.image,
+        githubLink: r.github || r.githubLink || r.repo || '',
+        liveLink: r.livelink || r.liveLink || r.live || '',
+        technologies:
+          Array.isArray(r.technologies) ? r.technologies : typeof r.technologies === 'string' && r.technologies.length
+            ? r.technologies.split(',').map((t) => t.trim()).filter(Boolean)
+            : [],
+      }))
+
+      setProjects(normalized)
     } catch (error) {
       toast.error('Error loading projects')
     } finally {

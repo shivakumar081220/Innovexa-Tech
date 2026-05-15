@@ -45,19 +45,29 @@ body.dark {
 /* Smooth transitions */
 @layer components {
   .btn-primary {
-    @apply px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 hover:shadow-lg;
+    @apply px-6 py-3 rounded-lg font-semibold text-white transition-all duration-300 hover:shadow-xl;
+    background-image: linear-gradient(90deg, #06b6d4, #7c3aed);
+    box-shadow: 0 8px 20px rgba(124,58,237,0.12);
+    border: none;
   }
   
   .btn-secondary {
-    @apply px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-all duration-300 hover:shadow-lg;
+    @apply px-6 py-3 rounded-lg font-semibold text-white transition-all duration-300 hover:shadow-xl;
+    background-image: linear-gradient(90deg, #f97316, #ef4444);
+    box-shadow: 0 8px 20px rgba(239,68,68,0.12);
   }
   
   .btn-outline {
-    @apply px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 dark:hover:bg-gray-800 transition-all duration-300;
+    @apply px-6 py-3 border-2 rounded-lg font-semibold transition-all duration-300;
+    border-image: linear-gradient(90deg,#06b6d4,#7c3aed) 1;
+    color: #0ea5a4;
+    background-color: transparent;
   }
-  
+  .btn-outline:hover { background-color: rgba(124,58,237,0.06); }
   .card {
     @apply bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden;
+    border-top: 4px solid transparent;
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
   }
   
   .gradient-text {

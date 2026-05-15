@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { projectsService, uploadFile, API_ASSET_BASE_URL } from '../../services/api'
+import { supaProjectsService } from '../../services/supabaseService'
 import { Trash2, Edit2, Plus, Upload } from 'lucide-react'
 
 const PortfolioManagement = () => {
@@ -27,8 +28,8 @@ const PortfolioManagement = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await projectsService.getAllProjects()
-      setProjects(response.data)
+      const rows = await supaProjectsService.getProjects()
+      setProjects(rows)
     } catch (error) {
       toast.error('Error loading projects')
     } finally {
@@ -66,14 +67,12 @@ const PortfolioManagement = () => {
       }
 
       if (editingId) {
-        await projectsService.updateProject(editingId, submitData)
-        setProjects((prev) =>
-          prev.map((p) => (p._id === editingId ? submitData : p))
-        )
+        await supaProjectsService.updateProject(editingId, submitData)
+        setProjects((prev) => prev.map((p) => (p.id === editingId ? { ...p, ...submitData } : p)))
         toast.success('Project updated')
       } else {
-        const response = await projectsService.createProject(submitData)
-        setProjects((prev) => [...prev, response.data])
+        const created = await supaProjectsService.createProject(submitData)
+        setProjects((prev) => [...prev, created])
         toast.success('Project added')
       }
 
@@ -88,8 +87,8 @@ const PortfolioManagement = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Delete this project?')) {
       try {
-        await projectsService.deleteProject(id)
-        setProjects((prev) => prev.filter((p) => p._id !== id))
+        await supaProjectsService.deleteProject(id)
+        setProjects((prev) => prev.filter((p) => p.id !== id))
         toast.success('Project deleted')
       } catch (error) {
         toast.error('Error deleting project')
