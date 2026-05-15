@@ -22,7 +22,7 @@ const ProjectRequests = () => {
         _id: r.id || r.created_at,
         fullName: r.name,
         email: r.email,
-        phoneNumber: r.phnenumber,
+        phoneNumber: r.phonenumber,
         collegeName: r.college,
         projectTitle: r.title,
         projectDomain: r.domain,

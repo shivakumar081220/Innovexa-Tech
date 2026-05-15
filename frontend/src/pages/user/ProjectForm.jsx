@@ -57,7 +57,7 @@ const ProjectForm = () => {
       const payload = {
         name: formData.fullName,
         email: formData.email,
-        phnenumber: formData.phoneNumber,
+        phonenumber: formData.phoneNumber,
         college: formData.collegeName,
         title: formData.projectTitle,
         domain: formData.projectDomain,
