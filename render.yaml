@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: innovexa-tech-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://innovexa-backend.onrender.com/api
+      - key: VITE_API_ASSET_BASE_URL
+        value: https://innovexa-backend.onrender.com

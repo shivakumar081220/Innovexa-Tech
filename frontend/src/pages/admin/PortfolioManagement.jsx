@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
-import { projectsService, uploadFile } from '../../services/api'
+import { projectsService, uploadFile, API_ASSET_BASE_URL } from '../../services/api'
 import { Trash2, Edit2, Plus, Upload } from 'lucide-react'
 
 const PortfolioManagement = () => {
@@ -110,7 +110,7 @@ const PortfolioManagement = () => {
     setEditingId(project._id)
     setShowForm(true)
     if (project.image) {
-      setSelectedImage(`http://localhost:5000/uploads/${project.image}`)
+      setSelectedImage(`${API_ASSET_BASE_URL}/uploads/${project.image}`)
     }
   }
 
@@ -291,7 +291,7 @@ const PortfolioManagement = () => {
             <div className="h-40 bg-gradient-to-br from-blue-500 to-purple-600 relative">
               {project.image && (
                 <img
-                  src={`http://localhost:5000/uploads/${project.image}`}
+                  src={`${API_ASSET_BASE_URL}/uploads/${project.image}`}
                   alt={project.title}
                   className="w-full h-full object-cover"
                 />

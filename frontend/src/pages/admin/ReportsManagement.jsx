@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
-import { reportsService, uploadFile } from '../../services/api'
+import { reportsService, uploadFile, API_ASSET_BASE_URL } from '../../services/api'
 import { Trash2, Download, Plus } from 'lucide-react'
 
 const ReportsManagement = () => {
@@ -237,7 +237,7 @@ const ReportsManagement = () => {
                 <td className="py-3 px-4 flex gap-2">
                   {report.file && (
                     <a
-                      href={`http://localhost:5000/uploads/${report.file}`}
+                      href={`${API_ASSET_BASE_URL}/uploads/${report.file}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors"

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
-import { projectsService } from '../../services/api'
+import { projectsService, API_ASSET_BASE_URL } from '../../services/api'
 import { Github, ExternalLink } from 'lucide-react'
 
 const Portfolio = () => {
@@ -92,7 +92,7 @@ const Portfolio = () => {
                   <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600 overflow-hidden">
                     {project.image ? (
                       <img
-                        src={`http://localhost:5000/uploads/${project.image}`}
+                        src={`${API_ASSET_BASE_URL}/uploads/${project.image}`}
                         alt={project.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
