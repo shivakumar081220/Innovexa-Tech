@@ -1,9 +1,14 @@
 import React from 'react'
 import { Github, Linkedin, Twitter, Mail, MessageCircle } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
+  const navigate = useNavigate()
+
+  const handleAdminAccess = () => {
+    navigate('/admin')
+  }
 
   return (
     <footer className="bg-gray-900 dark:bg-black text-white py-12">
@@ -73,7 +78,13 @@ const Footer = () => {
         {/* Divider */}
         <div className="border-t border-gray-700 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center text-gray-400 text-sm">
-            <p>&copy; {currentYear} Innovexa Tech. All rights reserved.</p>
+            <button
+              onDoubleClick={handleAdminAccess}
+              className="cursor-pointer hover:text-white transition-colors"
+              title="Double-click to access admin dashboard"
+            >
+              &copy; {currentYear} Innovexa Tech. All rights reserved.
+            </button>
             <div className="flex gap-6 mt-4 md:mt-0">
               <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
