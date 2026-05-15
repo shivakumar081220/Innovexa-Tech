@@ -1,12 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Github, Linkedin, Twitter, Mail, MessageCircle } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
+import LoginModal from './LoginModal'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
   const navigate = useNavigate()
+  const [showLoginModal, setShowLoginModal] = useState(false)
 
   const handleAdminAccess = () => {
+    setShowLoginModal(true)
+  }
+
+  const handleLoginSuccess = () => {
+    setShowLoginModal(false)
     navigate('/admin')
   }
 
@@ -92,6 +99,12 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLogin={handleLoginSuccess}
+      />
     </footer>
   )
 }

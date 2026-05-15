@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
-import { dashboardService, userRequestsService, projectsService } from '../../services/api'
-import { TrendingUp, Users, CheckCircle, Clock } from 'lucide-react'
+import { dashboardService, userRequestsService } from '../../services/api'
+import { TrendingUp, Users, Clock, CheckCircle } from 'lucide-react'
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null)
@@ -14,26 +14,34 @@ const Dashboard = () => {
   }, [])
 
   const fetchDashboardData = async () => {
-    try {
-      const [statsRes, projectRes, inquiriesRes] = await Promise.all([
-        dashboardService.getStats(),
-        projectsService.getAllProjects(),
-        userRequestsService.getRequests(),
-      ])
+    setLoading(true)
 
-      setStats({
-        totalRequests: inquiriesRes.data.length,
-        completedProjects: projectRes.data.length,
-        pendingRequests: inquiriesRes.data.filter((r) => r.status === 'Pending').length,
-        satisfactionRate: 99,
-      })
-
-      setRecentInquiries(inquiriesRes.data.slice(0, 5))
-    } catch (error) {
-      toast.error('Error loading dashboard data')
-    } finally {
-      setLoading(false)
+    const fallbackStats = {
+      totalRequests: 0,
+      completedProjects: 0,
+      pendingRequests: 0,
+      satisfactionRate: 99,
     }
+
+    try {
+      const statsResponse = await dashboardService.getStats()
+      setStats(statsResponse.data || fallbackStats)
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error)
+      setStats(fallbackStats)
+      toast.error('Could not load statistics')
+    }
+
+    try {
+      const inquiriesResponse = await userRequestsService.getRequests()
+      setRecentInquiries((inquiriesResponse.data || []).slice(0, 5))
+    } catch (error) {
+      console.error('Error fetching recent inquiries:', error)
+      setRecentInquiries([])
+      toast.error('Could not load recent inquiries')
+    }
+
+    setLoading(false)
   }
 
   const StatCard = ({ icon: Icon, label, value, color }) => (
@@ -62,7 +70,6 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -71,7 +78,6 @@ const Dashboard = () => {
         <p className="text-gray-600 mt-2">Welcome to your admin panel</p>
       </motion.div>
 
-      {/* Stats Grid */}
       <div className="grid md:grid-cols-4 gap-6">
         <StatCard
           icon={Users}
@@ -99,14 +105,13 @@ const Dashboard = () => {
         />
       </div>
 
-      {/* Recent Inquiries */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="card p-6"
       >
         <h2 className="text-xl font-bold mb-4">Recent Inquiries</h2>
-        
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
