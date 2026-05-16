@@ -53,18 +53,21 @@ const ProjectForm = () => {
     setLoading(true)
 
     try {
+      const phoneNumber = String(formData.phoneNumber || '').replace(/\D/g, '').trim()
+      const budgetValue = Number(String(formData.budget || '').replace(/[^\d]/g, ''))
+
       // Insert into Supabase proposal table
       const payload = {
         name: formData.fullName,
         email: formData.email,
-        phonenumber: formData.phoneNumber,
+        phonenumber: phoneNumber,
         college: formData.collegeName,
         title: formData.projectTitle,
         domain: formData.projectDomain,
         type: formData.projectType,
         technologies: formData.technologiesRequired,
         deadline: formData.deadline,
-        budget: formData.budget,
+        budget: Number.isFinite(budgetValue) ? budgetValue : null,
         report: formData.needProjectReport,
         communication: formData.preferredCommunication,
         requirements: formData.detailedRequirements,
@@ -94,7 +97,8 @@ const ProjectForm = () => {
         navigate('/')
       }, 2000)
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Error submitting form')
+      console.error('Project form submit error:', error)
+      toast.error(error.message || error.response?.data?.message || 'Error submitting form')
     } finally {
       setLoading(false)
     }

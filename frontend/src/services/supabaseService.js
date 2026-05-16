@@ -3,9 +3,9 @@ import { supabase } from '../lib/supabaseClient'
 // Proposals (project requests)
 export const proposalService = {
   insertProposal: async (payload) => {
-    const { data, error } = await supabase.from('proposal').insert([payload]).select()
+    const { error } = await supabase.from('proposal').insert([payload])
     if (error) throw error
-    return data[0]
+    return payload
   },
 
   getProposals: async () => {
